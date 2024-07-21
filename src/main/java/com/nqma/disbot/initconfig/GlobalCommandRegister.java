@@ -1,27 +1,27 @@
 package com.nqma.disbot.initconfig;
 
 
-import com.nqma.disbot.service.commands.SlashCommand;
-import com.nqma.disbot.service.commands.SlashCommandListener;
-import com.nqma.disbot.service.commands.Test;
+import com.nqma.disbot.service.commands.listener.SlashCommandListener;
+import com.nqma.disbot.service.commands.music.Next;
 import com.nqma.disbot.service.commands.music.Play;
+import com.nqma.disbot.service.commands.music.Plist;
 import com.nqma.disbot.service.files.FileService;
 import discord4j.common.JacksonResources;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 import lombok.Getter;
+import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
-public class GlobalCommandRegister implements ApplicationRunner {
+public class GlobalCommandRegister {
 
     @Value("${commands.directory}")
     private String commandsDirectory;
@@ -29,18 +29,18 @@ public class GlobalCommandRegister implements ApplicationRunner {
     private final GatewayDiscordClient client;
 
     @Getter
-    private static SlashCommandListener slashCommandListener;
+    private SlashCommandListener slashCommandListener;
 
     private static final JacksonResources MAPPER = JacksonResources.create();
 
-
+    @Autowired
     public GlobalCommandRegister(GatewayDiscordClient client) {
         this.client = client;
     }
 
-    @Override
-    public void run(ApplicationArguments args) throws IOException {
-
+    @SneakyThrows
+    @Bean
+    public SlashCommandListener register() {
         // Get our application's ID
         long applicationId = client.getRestClient().getApplicationId().block();
 
@@ -54,14 +54,18 @@ public class GlobalCommandRegister implements ApplicationRunner {
         }
 
         //Register our slash command listener
-        List<SlashCommand> slashCommandClassList = List.of(new Play(), new Test());
-        slashCommandListener = new SlashCommandListener(slashCommandClassList, client);
+        slashCommandListener = new SlashCommandListener(List.of(
+                new Play(),
+                new Next(),
+                new Plist()),
+                client);
 
         client.getRestClient().getApplicationService().bulkOverwriteGlobalApplicationCommand(applicationId, commands)
-                .doOnNext(ignore -> System.out.println("Successfully registered commands"))
+                .doOnNext(ignore -> System.out.println("Successfully registered command"))
                 .doOnError(error -> System.out.println("Error registering commands: " + error.getMessage()))
                 .subscribe();
 
+        return slashCommandListener;
     }
 
 

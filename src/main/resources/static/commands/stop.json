@@ -1,0 +1,4 @@
+{
+  "name": "stop",
+  "description": "Disconnects the bot from the voice channel."
+}

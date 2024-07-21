@@ -2,11 +2,14 @@ package com.nqma.disbot.service.commands.music;
 
 import com.nqma.disbot.service.ExternalService;
 import com.nqma.disbot.service.commands.Commands;
+import com.nqma.disbot.service.commands.SlashCommand;
+import com.nqma.disbot.service.player.GuildQueue;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.entity.Member;
+import discord4j.core.spec.EmbedCreateSpec;
 import reactor.core.publisher.Mono;
 
-public class Next implements MusicSlashCommand {
+public class Next implements SlashCommand {
 
     @Override
     public String getName() {
@@ -15,15 +18,11 @@ public class Next implements MusicSlashCommand {
 
     @Override
     public Mono<Void> handle(ChatInputInteractionEvent event) {
+        System.out.println("Next song");
+        GuildQueue guildQueue = GuildQueue.getGuildQueue(event.getInteraction().getMember().get().getVoiceState().block());
 
-        return event.reply("Next song");
-    }
+        guildQueue.playNextSong();
 
-    @Override
-    public void run(Member member, String link) {
-        System.out.println("Next song for " + member.getUsername() + " with link " + link);
-
-        ExternalService externalService = new ExternalService();
-        externalService.getNextSong();
+        return event.reply().withEmbeds(EmbedCreateSpec.builder().description("Next song").build());
     }
 }
