@@ -1,6 +1,6 @@
 package com.nqma.disbot.controller;
 
-import com.nqma.responseservice.controller.requests.Request;
+import com.nqma.disbot.controller.requests.Request;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
