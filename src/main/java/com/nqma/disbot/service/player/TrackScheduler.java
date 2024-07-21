@@ -1,5 +1,6 @@
 package com.nqma.disbot.service.player;
 
+import com.nqma.disbot.service.responsers.MessageSender;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
@@ -27,6 +28,11 @@ public final class TrackScheduler extends AudioEventAdapter implements AudioLoad
             // Only start the next track if the end reason is suitable for it (FINISHED or LOAD_FAILED)
             guildQueue.playNextSong();
         }
+    }
+
+    @Override
+    public void onTrackStart(AudioPlayer player, AudioTrack track) {
+        MessageSender.sendTo();
     }
 
     @Override

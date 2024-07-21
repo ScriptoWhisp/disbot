@@ -98,4 +98,8 @@ public class GuildQueue {
     public static GuildQueue getGuildQueue(VoiceState voiceState) {
         return guildQueues.get(voiceState.getGuildId().asLong());
     }
+
+    public static GuildQueue getGuildQueue(long guildId) {
+        return guildQueues.get(guildId);
+    }
 }
