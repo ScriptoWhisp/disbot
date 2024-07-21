@@ -5,7 +5,8 @@ public enum Commands {
     PAUSE("pause"),
     STOP("stop"),
     NEXT("next"),
-    TEST("test");
+    PREVIOUS("previous"),
+    PLIST("plist");
 
     private final String name;
 

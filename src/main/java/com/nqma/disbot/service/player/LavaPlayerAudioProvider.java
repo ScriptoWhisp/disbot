@@ -1,4 +1,4 @@
-package com.nqma.disbot.service.commands.music.player;
+package com.nqma.disbot.service.player;
 
 import com.sedmelluq.discord.lavaplayer.format.StandardAudioDataFormats;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
