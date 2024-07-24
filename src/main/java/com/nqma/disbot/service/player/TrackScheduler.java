@@ -8,6 +8,8 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import discord4j.core.spec.EmbedCreateSpec;
+import discord4j.rest.util.Color;
 import lombok.Builder;
 
 @Builder
@@ -32,7 +34,17 @@ public final class TrackScheduler extends AudioEventAdapter implements AudioLoad
 
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
-        MessageSender.sendTo();
+        System.out.println("Track started" + track.getInfo().artworkUrl + track.getInfo().isrc);
+        long secs = track.getInfo().length / 1000;
+        MessageSender.sendTo(guildQueue.getMessageChannel(), EmbedCreateSpec
+                .builder()
+                .title(track.getInfo().title)
+                .author(track.getInfo().author, track.getInfo().uri, track.getInfo().uri)
+                .color(Color.BLUE)
+                .description(String.format("Duration: %02d:%02d", (int) secs / 60, secs % 60))
+                .addField("Upcoming", guildQueue.peekNextSong() == null ? "Nothing, use /play" : guildQueue.peekNextSong().toString(), false)
+                .footer("Requested by: " + guildQueue.getCurrentSong().getMember().getNicknameMention(), guildQueue.getCurrentSong().getMember().getAvatarUrl())
+                .build()).block();
     }
 
     @Override
