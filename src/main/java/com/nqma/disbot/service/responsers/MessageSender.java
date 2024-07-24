@@ -17,6 +17,10 @@ public abstract class MessageSender {
         return event.reply().withEmbeds(message.getEmbed()).withEphemeral(true);
     }
 
+    public static Mono<Void> replyToEphemeral(ChatInputInteractionEvent event, Message message, String text) {
+        return event.reply().withEmbeds(message.formatEmbed(text)).withEphemeral(true);
+    }
+
     public static Mono<Void> replyTo(ChatInputInteractionEvent event, Message message, String text) {
         return event.reply(message.format(text));
     }
