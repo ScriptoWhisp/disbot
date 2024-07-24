@@ -1,4 +1,4 @@
-package com.nqma.disbot.service.player;
+package com.nqma.disbot.service.player.track;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -39,7 +39,7 @@ public class Song {
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
                 // If you want to handle playlists, you can loop through them and call the callback for each track
-                sink.error(new UnsupportedOperationException("Cannot load playlist"));
+                sink.success(playlist.getTracks().get(0).getInfo());
             }
 
             @Override

@@ -1,12 +1,12 @@
 package com.nqma.disbot.service.player;
 
 import com.nqma.disbot.initconfig.AudioConfiguration;
+import com.nqma.disbot.service.player.track.Song;
 import com.nqma.disbot.utils.LimitedSizeList;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.channel.Channel;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.VoiceChannel;
 import discord4j.core.spec.EmbedCreateSpec;
