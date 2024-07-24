@@ -2,9 +2,7 @@ package com.nqma.disbot.initconfig;
 
 
 import com.nqma.disbot.service.commands.listener.SlashCommandListener;
-import com.nqma.disbot.service.commands.music.Next;
-import com.nqma.disbot.service.commands.music.Play;
-import com.nqma.disbot.service.commands.music.Plist;
+import com.nqma.disbot.service.commands.music.*;
 import com.nqma.disbot.service.files.FileService;
 import discord4j.common.JacksonResources;
 import discord4j.core.GatewayDiscordClient;
@@ -57,7 +55,10 @@ public class GlobalCommandRegister {
         slashCommandListener = new SlashCommandListener(List.of(
                 new Play(),
                 new Next(),
-                new Plist()),
+                new Plist(),
+                new Pause(),
+                new Stop(),
+                new Status()),
                 client);
 
         client.getRestClient().getApplicationService().bulkOverwriteGlobalApplicationCommand(applicationId, commands)

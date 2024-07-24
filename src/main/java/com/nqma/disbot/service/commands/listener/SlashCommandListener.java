@@ -17,7 +17,6 @@ public class SlashCommandListener {
 
     public SlashCommandListener(List<SlashCommand> slashCommands, GatewayDiscordClient client) {
         this.slashCommands = slashCommands;
-        System.out.println("SlashCommandListener" + slashCommands.toString());
 
         client.on(ChatInputInteractionEvent.class, this::handle).subscribe();
     }
