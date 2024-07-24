@@ -5,6 +5,9 @@ import com.nqma.disbot.utils.LimitedSizeList;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import discord4j.core.object.VoiceState;
+import discord4j.core.object.entity.Member;
+import discord4j.core.object.entity.channel.Channel;
+import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.VoiceChannel;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.voice.AudioProvider;
@@ -25,7 +28,12 @@ public class GuildQueue {
     private static final Integer MAX_HISTORY_SIZE = 10;
     private static final Map<Long, GuildQueue> guildQueues = new HashMap<>();
 
+
+    @Getter
     private final Queue<Song> queue = new ArrayDeque<>(); // Actual and future songs
+    @Getter
+    private final AudioPlayer player = AudioConfiguration.getPlayerManager().createPlayer();
+    @Getter
     private Song currentSong = null; // Currently playing song
     private final List<Song> history = new LimitedSizeList<>(MAX_HISTORY_SIZE); // Previously played songs
 
@@ -34,15 +42,18 @@ public class GuildQueue {
 
     @Getter
     private VoiceChannel channel = null;
+    @Getter
+    private final MessageChannel messageChannel;
 
-    public GuildQueue(VoiceChannel channel, long guildId) {
+    public GuildQueue(VoiceChannel channel, long guildId, MessageChannel messageChannel) {
         guildQueues.put(guildId, this);
         this.channel = channel;
+        this.messageChannel = messageChannel;
 
         // Create an AudioPlayer so Discord4J can receive audio data
-        AudioPlayer player = AudioConfiguration.getPlayerManager().createPlayer();
 
         AudioProvider provider = new LavaPlayerAudioProvider(player);
+
 
         scheduler = TrackScheduler.builder().player(player).guildQueue(this).build();
 
@@ -51,22 +62,23 @@ public class GuildQueue {
         channel.join(spec -> spec.setProvider(provider)).block();
     }
 
-    public GuildQueue(VoiceState voiceState) {
-        this(voiceState.getChannel().block(), voiceState.getGuildId().asLong());
+    public GuildQueue(VoiceState voiceState, MessageChannel messageChannel) {
+        this(voiceState.getChannel().block(), voiceState.getGuildId().asLong(), messageChannel);
     }
 
-    public void addSong(String link) {
-        if (queue.size() >= MAX_QUEUE_SIZE) return;
+    public String addSong(String link, Member member) {
+        if (queue.size() >= MAX_QUEUE_SIZE) return null; // Queue is full
 
-        Song song = Song.builder().url(link).build();
-        song.getTrackInfo(playerManager);
+        Song song = Song.builder().url(link).member(member).build();
+        song.getTrackInfo(playerManager).block();
 
         if (queue.isEmpty() && currentSong == null) {
             queue.add(song);
             playNextSong();
-            return;
+        } else {
+            queue.add(song);
         }
-        queue.add(song);
+        return song.toString();
     }
 
     public void playNextSong() {
@@ -95,11 +107,29 @@ public class GuildQueue {
         .build();
     }
 
+    public boolean pause() {
+        boolean isPausedNow = !player.isPaused();
+        player.setPaused(isPausedNow);
+        return isPausedNow;
+    }
+
+    public Song peekNextSong() {
+        return queue.isEmpty() ? null : queue.peek();
+    }
+
     public static GuildQueue getGuildQueue(VoiceState voiceState) {
         return guildQueues.get(voiceState.getGuildId().asLong());
     }
 
     public static GuildQueue getGuildQueue(long guildId) {
         return guildQueues.get(guildId);
+    }
+
+    public static void removeAndClearGuildQueue(long guildId) {
+        GuildQueue guild = guildQueues.get(guildId);
+        guild.player.destroy();
+        guild.queue.clear();
+        guild.channel.sendDisconnectVoiceState().block();
+        guildQueues.remove(guildId);
     }
 }

@@ -4,10 +4,7 @@ import com.nqma.disbot.service.commands.Commands;
 import com.nqma.disbot.service.commands.SlashCommand;
 import com.nqma.disbot.service.player.GuildQueue;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
-import lombok.NonNull;
 import reactor.core.publisher.Mono;
-
-import java.util.Objects;
 
 public class Plist implements SlashCommand {
     @Override
@@ -19,12 +16,12 @@ public class Plist implements SlashCommand {
     public Mono<Void> handle(ChatInputInteractionEvent event) {
         System.out.println("Playlist");
         return event.reply()
-                .withEmbeds(GuildQueue.getGuildQueue(Objects.requireNonNull(event
+                .withEmbeds(GuildQueue
+                        .getGuildQueue(event
                                 .getInteraction()
-                                .getMember()
+                                .getGuildId()
                                 .get()
-                                .getVoiceState()
-                                .block()))
+                                .asLong())
                         .getQueueEmbed());
     }
 }
