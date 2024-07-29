@@ -8,22 +8,23 @@ import com.nqma.disbot.service.responsers.MessageSender;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import reactor.core.publisher.Mono;
 
-public class Next implements SlashCommand {
-
+public class Skip implements SlashCommand {
     @Override
     public String getName() {
-        return Commands.NEXT.toString();
+        return Commands.SKIP.toString();
     }
 
     @Override
     public Mono<Void> handle(ChatInputInteractionEvent event) {
-        System.out.println("Next song");
+        System.out.println("Skip playlist");
         GuildQueue guildQueue = GuildQueue.getGuildQueue(event.getInteraction().getGuildId().get().asLong());
-        if (guildQueue == null || (guildQueue.getQueue().isEmpty() && !guildQueue.getCurrentPlaylist().hasNext())) {
+        if (guildQueue == null || guildQueue.getQueue().isEmpty()) {
             return MessageSender.replyToEphemeral(event, Message.NO_SONGS_IN_QUEUE);
+        } else if (guildQueue.getCurrentPlaylist() == null) {
+            return MessageSender.replyToEphemeral(event, Message.NO_CURRENT_PLAYLIST);
         }
 
-        guildQueue.playNextSong();
+        guildQueue.skip();
 
         return MessageSender.replyToEphemeral(event, Message.NEXT_SONG, guildQueue.getCurrentSong().toString());
     }

@@ -58,7 +58,8 @@ public class GlobalCommandRegister {
                 new Plist(),
                 new Pause(),
                 new Stop(),
-                new Status()),
+                new Status(),
+                new Skip()),
                 client);
 
         client.getRestClient().getApplicationService().bulkOverwriteGlobalApplicationCommand(applicationId, commands)

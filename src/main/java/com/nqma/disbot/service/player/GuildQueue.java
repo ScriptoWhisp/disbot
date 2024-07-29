@@ -1,7 +1,10 @@
 package com.nqma.disbot.service.player;
 
 import com.nqma.disbot.initconfig.AudioConfiguration;
+import com.nqma.disbot.service.player.track.Playable;
+import com.nqma.disbot.service.player.track.Playlist;
 import com.nqma.disbot.service.player.track.Song;
+import com.nqma.disbot.service.player.track.TrackSearch;
 import com.nqma.disbot.utils.LimitedSizeList;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -30,12 +33,16 @@ public class GuildQueue {
 
 
     @Getter
-    private final Queue<Song> queue = new ArrayDeque<>(); // Actual and future songs
+    private final Queue<Playable> queue = new ArrayDeque<>(); // Actual and future songs
+    @Getter
+    private Integer size = 0;
     @Getter
     private final AudioPlayer player = AudioConfiguration.getPlayerManager().createPlayer();
     @Getter
     private Song currentSong = null; // Currently playing song
-    private final List<Song> history = new LimitedSizeList<>(MAX_HISTORY_SIZE); // Previously played songs
+    @Getter
+    private Playlist currentPlaylist = null; // Currently playing playlist
+    private final List<Playable> history = new LimitedSizeList<>(MAX_HISTORY_SIZE); // Previously played songs
 
 
     private final TrackScheduler scheduler;
@@ -54,7 +61,6 @@ public class GuildQueue {
 
         AudioProvider provider = new LavaPlayerAudioProvider(player);
 
-
         scheduler = TrackScheduler.builder().player(player).guildQueue(this).build();
 
         player.addListener(scheduler);
@@ -69,22 +75,46 @@ public class GuildQueue {
     public String addSong(String link, Member member) {
         if (queue.size() >= MAX_QUEUE_SIZE) return null; // Queue is full
 
-        Song song = Song.builder().url(link).member(member).build();
-        song.getTrackInfo(playerManager).block();
+        TrackSearch search = TrackSearch.builder().url(link).member(member).build();
+        Playable playable = search.getTrackInfo(playerManager).block();
 
-        if (queue.isEmpty() && currentSong == null) {
-            queue.add(song);
+        if (queue.isEmpty() && this.currentSong == null) {
+            queue.add(playable);
+            System.out.println("Playing now for " + channel.getName() + " with link " + link);
             playNextSong();
         } else {
-            queue.add(song);
+            queue.add(playable);
         }
-        return song.toString();
+        addToSize(playable.getSize());
+        return playable.toString();
     }
 
     public void playNextSong() {
         if (currentSong != null) history.add(currentSong);
-        currentSong = queue.poll();
-        if (currentSong == null) return;
+
+        if (currentPlaylist != null) {
+            System.out.println("test1");
+            if (currentPlaylist.hasNext()) {
+                currentSong = currentPlaylist.next();
+                playSong(currentSong.getUrl());
+                return;
+            } else {
+                currentPlaylist = null;
+            }
+        }
+
+        System.out.println("test2");
+        Playable playable = queue.poll();
+        if (playable == null) return;
+        if (playable instanceof Song) {
+            currentSong = (Song) playable;
+        } else if (playable instanceof Playlist) {
+            currentPlaylist = (Playlist) playable;
+            currentSong = currentPlaylist.next();
+        }
+
+        System.out.println("Playing next song " + currentSong.toString());
+
         playSong(currentSong.getUrl());
     }
 
@@ -97,14 +127,21 @@ public class GuildQueue {
         return EmbedCreateSpec.builder()
         .title("Queue")
         .description(history.stream()
-                .map(Song::toString)
+                .map(Playable::toString)
                 .collect(Collectors.joining("\n")))
-        .addField("> " + (currentSong == null ? "Nothing, use /play" : currentSong.toString()),
-                queue.stream()
-                .map(Song::toString)
-                .collect(Collectors.joining("\n")),
-                false)
+        .addField("", getNowPlaying(), false)
+        .addField("",
+            queue.stream()
+            .map(Playable::toString)
+            .collect(Collectors.joining("\n")),
+            false)
+        .footer("This playlist have " + size + " Songs", null)
         .build();
+    }
+
+    private String getNowPlaying() {
+        if (currentPlaylist != null) return currentPlaylist.toInnerString();
+        return currentSong == null ? "Nothing, use /play" : "> " + currentSong;
     }
 
     public boolean pause() {
@@ -113,8 +150,29 @@ public class GuildQueue {
         return isPausedNow;
     }
 
+    public boolean skip() {
+        currentPlaylist = null;
+        Playable playable = queue.poll();
+        if (playable == null) return false;
+        if (playable instanceof Song) {
+            currentSong = (Song) playable;
+        } else if (playable instanceof Playlist) {
+            currentPlaylist = (Playlist) playable;
+            currentSong = currentPlaylist.next();
+        }
+        return true;
+    }
+
     public Song peekNextSong() {
-        return queue.isEmpty() ? null : queue.peek();
+        if (currentPlaylist != null) return currentPlaylist.peekNext();
+        Playable next = queue.peek();
+        if (next instanceof Song) return (Song) next;
+        else if (next instanceof Playlist) return ((Playlist) next).peekNext();
+        return null;
+    }
+
+    private void addToSize(int size) {
+        this.size += size;
     }
 
     public static GuildQueue getGuildQueue(VoiceState voiceState) {

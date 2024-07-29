@@ -12,48 +12,21 @@ import lombok.Getter;
 import reactor.core.publisher.Mono;
 
 
-@Builder
-@Getter
-public class Song {
 
-    private String url;
-    private String title;
+@Getter
+public class Song extends Playable {
+
     private String author;
-    private Member member;
+
+    @Builder
+    public Song(String url, String title, String author, Member member) {
+        super(url, title, member);
+        this.author = author;
+    }
 
     @Override
     public String toString() {
-        return title + " | " + author;
-    }
-
-    public Mono<AudioTrackInfo> getTrackInfo(AudioPlayerManager playerManager) {
-        return Mono.create(sink -> playerManager.loadItem(url, new AudioLoadResultHandler() {
-            @Override
-            public void trackLoaded(AudioTrack track) {
-                AudioTrackInfo info = track.getInfo();
-                title = info.title;
-                author = info.author;
-                sink.success(info);
-            }
-
-            @Override
-            public void playlistLoaded(AudioPlaylist playlist) {
-                // If you want to handle playlists, you can loop through them and call the callback for each track
-                sink.success(playlist.getTracks().get(0).getInfo());
-            }
-
-            @Override
-            public void noMatches() {
-                // Notify the user that the track could not be found
-                sink.error(new UnsupportedOperationException("No matches found"));
-            }
-
-            @Override
-            public void loadFailed(FriendlyException exception) {
-                // Notify the user that the track could not be loaded
-                sink.error(new UnsupportedOperationException("Load failed"));
-            }
-        }));
+        return title + " | " + author + " (Song)";
     }
 
 }

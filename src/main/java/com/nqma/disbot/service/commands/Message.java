@@ -14,6 +14,7 @@ public enum Message {
     NO_RESULTS("No results found.", Color.RED),
     QUEUE_FULL("The queue is full. We are very sorry for this limitation, we already working on it", Color.RED),
     UNSUPPORTED("Unsupported operation: %s", Color.RED),
+    NO_CURRENT_PLAYLIST("There is no current playlist.", Color.RED),
 
     PLAYING("Now playing: %s"),
     ADDED_TO_QUEUE("Added to queue: %s"),

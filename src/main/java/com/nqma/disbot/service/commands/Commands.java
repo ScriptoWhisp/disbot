@@ -7,5 +7,6 @@ public enum Commands {
     NEXT,
     PREVIOUS,
     PLIST,
-    STATUS
+    STATUS,
+    SKIP,
 }
