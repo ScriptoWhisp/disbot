@@ -1,9 +1,10 @@
-package com.nqma.disbot.initconfig;
+package com.nqma.disbot.config;
 
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.presence.ClientActivity;
 import discord4j.core.object.presence.ClientPresence;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +16,7 @@ public class InitialConfiguration {
     @Value("${token.main}")
     private String discordToken;
 
+    @Getter
     private static GatewayDiscordClient client;
 
     /**

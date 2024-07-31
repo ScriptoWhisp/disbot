@@ -1,4 +1,4 @@
-package com.nqma.disbot.initconfig;
+package com.nqma.disbot.config;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;

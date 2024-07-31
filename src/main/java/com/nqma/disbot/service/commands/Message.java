@@ -14,13 +14,16 @@ public enum Message {
     NO_RESULTS("No results found.", Color.RED),
     QUEUE_FULL("The queue is full. We are very sorry for this limitation, we already working on it", Color.RED),
     UNSUPPORTED("Unsupported operation: %s", Color.RED),
+    NOT_IN_CHANNEL("You have to be in %s to use this command.", Color.RED),
 
     PLAYING("Now playing: %s"),
     ADDED_TO_QUEUE("Added to queue: %s"),
     NEXT_SONG("Next song: %s"),
     PAUSED("Paused", Color.YELLOW),
     RESUMED("Resumed", Color.GREEN),
-    STOPPED("Stopped", Color.GREEN);
+    STOPPED("Stopped", Color.GREEN),
+
+    SETUP("Setup complete.", Color.DISCORD_WHITE);
 
     @Getter
     private final String message;
