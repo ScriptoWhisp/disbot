@@ -6,8 +6,6 @@ import com.nqma.disbot.service.commands.SlashCommand;
 import com.nqma.disbot.service.player.GuildQueue;
 import com.nqma.disbot.service.responsers.MessageSender;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
-import discord4j.core.spec.EmbedCreateSpec;
-import discord4j.rest.util.Color;
 import reactor.core.publisher.Mono;
 
 public class Next implements SlashCommand {

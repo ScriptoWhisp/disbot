@@ -1,23 +1,18 @@
 package com.nqma.disbot.service.player;
 
-import com.nqma.disbot.initconfig.AudioConfiguration;
+import com.nqma.disbot.config.AudioConfiguration;
 import com.nqma.disbot.utils.LimitedSizeList;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.channel.Channel;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.VoiceChannel;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.voice.AudioProvider;
 import lombok.Getter;
 
-import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class GuildQueue {
@@ -127,6 +122,7 @@ public class GuildQueue {
 
     public static void removeAndClearGuildQueue(long guildId) {
         GuildQueue guild = guildQueues.get(guildId);
+        if (guild == null) return;
         guild.player.destroy();
         guild.queue.clear();
         guild.channel.sendDisconnectVoiceState().block();
