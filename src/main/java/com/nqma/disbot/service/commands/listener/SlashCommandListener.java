@@ -57,7 +57,7 @@ public class SlashCommandListener {
 
         // if guild does not have a queue, check if the guild has a channel set in the database
         Optional<GuildSetting> guildSetting = guildSettingService.findGuildSettingById(guildId);
-        if (guildSetting.isPresent() && guildSetting.get().getChannelId() != event.getInteraction().getChannelId().asLong()) {
+        if (guildSetting.isPresent() && guildSetting.get().getChannelId() != null && guildSetting.get().getChannelId() != event.getInteraction().getChannelId().asLong()) {
             return Optional.ofNullable(client.getChannelById(Snowflake.of(guildSetting.get().getChannelId())).block());
         }
         return Optional.empty();

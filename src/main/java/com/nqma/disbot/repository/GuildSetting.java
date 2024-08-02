@@ -22,4 +22,7 @@ public class GuildSetting {
 
     @Column(name = "channel_id")
     private Long channelId;
+
+    @Column(name = "in_game_mode")
+    private boolean inGameMode;
 }

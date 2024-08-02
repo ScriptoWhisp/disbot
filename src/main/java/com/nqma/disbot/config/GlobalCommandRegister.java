@@ -59,7 +59,7 @@ public class GlobalCommandRegister {
 
         //Register our slash command listener
         slashCommandListener = new SlashCommandListener(List.of(
-                new Play(),
+                new Play(guildSettingService),
                 new Next(),
                 new Plist(),
                 new Pause(),
