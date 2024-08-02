@@ -2,8 +2,6 @@ package com.nqma.disbot.config;
 
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
-import discord4j.core.event.domain.PresenceUpdateEvent;
-import discord4j.core.event.domain.guild.MemberUpdateEvent;
 import discord4j.core.object.presence.ClientActivity;
 import discord4j.core.object.presence.ClientPresence;
 import discord4j.gateway.intent.Intent;

@@ -1,13 +1,9 @@
 package com.nqma.disbot.service.player;
 
 import com.nqma.disbot.config.AudioConfiguration;
-import com.nqma.disbot.config.InitialConfiguration;
-import com.nqma.disbot.service.ingamemode.InGameMode;
 import com.nqma.disbot.utils.LimitedSizeList;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
-import discord4j.core.GatewayDiscordClient;
-import discord4j.core.event.domain.PresenceUpdateEvent;
 import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.channel.MessageChannel;
@@ -15,9 +11,6 @@ import discord4j.core.object.entity.channel.VoiceChannel;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.voice.AudioProvider;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.stream.Collectors;

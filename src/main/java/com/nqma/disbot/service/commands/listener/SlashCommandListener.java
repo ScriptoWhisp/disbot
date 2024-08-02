@@ -1,6 +1,5 @@
 package com.nqma.disbot.service.commands.listener;
 
-import com.nqma.disbot.config.InitialConfiguration;
 import com.nqma.disbot.repository.GuildSetting;
 import com.nqma.disbot.service.commands.Message;
 import com.nqma.disbot.service.commands.SlashCommand;
@@ -11,7 +10,6 @@ import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.entity.channel.Channel;
-import discord4j.core.object.entity.channel.MessageChannel;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Mono;

@@ -1,15 +1,9 @@
 package com.nqma.disbot.service.ingamemode;
 
-import com.austinv11.servicer.Service;
 import com.nqma.disbot.service.ingamemode.game.GameStrategy;
 import com.nqma.disbot.service.player.GuildQueue;
-import discord4j.core.GatewayDiscordClient;
-import discord4j.core.event.domain.PresenceUpdateEvent;
-import discord4j.core.event.domain.guild.MemberUpdateEvent;
-import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.presence.Activity;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -19,13 +13,6 @@ import java.util.Optional;
 @Component
 @EnableScheduling
 public class InGameMode {
-
-    private GatewayDiscordClient client;
-
-    @Autowired
-    public InGameMode(GatewayDiscordClient client) {
-        this.client = client;
-    }
 
     @Scheduled(fixedDelay = 40000) // 60000 milliseconds = 1 minute
     public void handle() {
