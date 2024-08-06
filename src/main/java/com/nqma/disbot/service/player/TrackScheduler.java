@@ -43,7 +43,7 @@ public final class TrackScheduler extends AudioEventAdapter implements AudioLoad
                 .color(Color.BLUE)
                 .description(String.format("Duration: %02d:%02d", (int) secs / 60, secs % 60))
                 .addField("Upcoming", guildQueue.peekNextSong() == null ? "Nothing, use /play" : guildQueue.peekNextSong().toString(), false)
-                .footer("Requested by: " + guildQueue.getCurrentSong().getMember().getNicknameMention(), guildQueue.getCurrentSong().getMember().getAvatarUrl())
+                .footer("Requested by " + guildQueue.getCurrentSong().getMember().getDisplayName(), guildQueue.getCurrentSong().getMember().getAvatarUrl())
                 .build()).block();
     }
 

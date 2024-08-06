@@ -8,5 +8,6 @@ public enum Commands {
     PREVIOUS,
     PLIST,
     STATUS,
+    SKIP,
     SETUP,
 }

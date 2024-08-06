@@ -1,4 +1,4 @@
-package com.nqma.disbot.service.player;
+package com.nqma.disbot.service.player.track;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -8,38 +8,37 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import discord4j.core.object.entity.Member;
 import lombok.Builder;
-import lombok.Getter;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 
 @Builder
-@Getter
-public class Song {
+public class TrackSearch {
 
     private String url;
-    private String title;
-    private String author;
     private Member member;
 
-    @Override
-    public String toString() {
-        return title + " | " + author;
-    }
-
-    public Mono<AudioTrackInfo> getTrackInfo(AudioPlayerManager playerManager) {
+    public Mono<Playable> getTrackInfo(AudioPlayerManager playerManager) {
         return Mono.create(sink -> playerManager.loadItem(url, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
                 AudioTrackInfo info = track.getInfo();
-                title = info.title;
-                author = info.author;
-                sink.success(info);
+                sink.success(Song.builder().url(url).title(info.title).author(info.author).member(member).build());
             }
 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
                 // If you want to handle playlists, you can loop through them and call the callback for each track
-                sink.error(new UnsupportedOperationException("Cannot load playlist"));
+                sink.success(Playlist
+                        .builder()
+                        .url(url)
+                        .title(playlist.getName())
+                        .member(member)
+                        .songs(playlist.getTracks().stream().map(audioTrack -> {
+                            AudioTrackInfo info = audioTrack.getInfo();
+                            return Song.builder().url(info.uri).title(info.title).author(info.author).member(member).build();
+                        }).toList())
+                        .build());
             }
 
             @Override
