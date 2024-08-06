@@ -1,6 +1,6 @@
 package com.nqma.disbot.service.player;
 
-import com.nqma.disbot.initconfig.AudioConfiguration;
+import com.nqma.disbot.config.AudioConfiguration;
 import com.nqma.disbot.service.player.track.Playable;
 import com.nqma.disbot.service.player.track.Playlist;
 import com.nqma.disbot.service.player.track.Song;
@@ -29,6 +29,7 @@ public class GuildQueue {
 
     private static final Integer MAX_QUEUE_SIZE = 50;
     private static final Integer MAX_HISTORY_SIZE = 10;
+    @Getter
     private static final Map<Long, GuildQueue> guildQueues = new HashMap<>();
 
 
@@ -46,16 +47,21 @@ public class GuildQueue {
 
 
     private final TrackScheduler scheduler;
+    @Getter
+    private final boolean inGameMode;
+    @Getter
+    private boolean inGame = false;
 
     @Getter
     private VoiceChannel channel = null;
     @Getter
     private final MessageChannel messageChannel;
 
-    public GuildQueue(VoiceChannel channel, long guildId, MessageChannel messageChannel) {
+    public GuildQueue(VoiceChannel channel, long guildId, MessageChannel messageChannel, boolean inGameMode) {
         guildQueues.put(guildId, this);
         this.channel = channel;
         this.messageChannel = messageChannel;
+        this.inGameMode = inGameMode;
 
         // Create an AudioPlayer so Discord4J can receive audio data
 
@@ -68,8 +74,8 @@ public class GuildQueue {
         channel.join(spec -> spec.setProvider(provider)).block();
     }
 
-    public GuildQueue(VoiceState voiceState, MessageChannel messageChannel) {
-        this(voiceState.getChannel().block(), voiceState.getGuildId().asLong(), messageChannel);
+    public GuildQueue(VoiceState voiceState, MessageChannel messageChannel, boolean inGameMode) {
+        this(voiceState.getChannel().block(), voiceState.getGuildId().asLong(), messageChannel, inGameMode);
     }
 
     public String addSong(String link, Member member) {
@@ -163,6 +169,13 @@ public class GuildQueue {
         return true;
     }
 
+    public boolean setPaused(boolean isPaused) {
+        inGame = isPaused;
+        if (isPaused == player.isPaused()) return isPaused;
+        player.setPaused(isPaused);
+        return isPaused;
+    }
+
     public Song peekNextSong() {
         if (currentPlaylist != null) return currentPlaylist.peekNext();
         Playable next = queue.peek();
@@ -183,8 +196,13 @@ public class GuildQueue {
         return guildQueues.get(guildId);
     }
 
+    public static List<GuildQueue> getGuildsQueueWithGameMode() {
+        return guildQueues.values().stream().filter(GuildQueue::isInGameMode).toList();
+    }
+
     public static void removeAndClearGuildQueue(long guildId) {
         GuildQueue guild = guildQueues.get(guildId);
+        if (guild == null) return;
         guild.player.destroy();
         guild.queue.clear();
         guild.channel.sendDisconnectVoiceState().block();

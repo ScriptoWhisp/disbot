@@ -1,0 +1,18 @@
+{
+  "name": "setup",
+  "description": "Setup bot's channel to communicate with users and bot's in game mode",
+  "options": [
+    {
+      "name": "channel_id",
+      "description": "Not required if you want to clear settings",
+      "type": 3,
+      "required": false
+    },
+    {
+      "name": "in_game_mode",
+      "description": "If you are in game bot will set pause more on that in /status",
+      "type": 5,
+      "required": false
+    }
+  ]
+}

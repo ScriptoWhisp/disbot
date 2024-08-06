@@ -2,10 +2,11 @@ package com.nqma.disbot.service.commands.music;
 
 import com.nqma.disbot.service.commands.Commands;
 import com.nqma.disbot.service.commands.SlashCommand;
-import com.nqma.disbot.service.responsers.MessageSender;
-import com.nqma.disbot.utils.MemoryUtil;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
+import discord4j.core.object.presence.Activity;
 import reactor.core.publisher.Mono;
+
+import java.util.Optional;
 
 public class Status implements SlashCommand {
     @Override
@@ -15,6 +16,17 @@ public class Status implements SlashCommand {
 
     @Override
     public Mono<Void> handle(ChatInputInteractionEvent event) {
-        return event.reply().withEmbeds(MemoryUtil.getMemoryUsage());
+        event.getInteraction().getMember().get().getPresence().subscribe(presence -> {
+            System.out.println("Presence: ");
+            Optional<Activity> activityOptional = presence.getActivity();
+            activityOptional.ifPresent(activity -> {
+                // Log the activity
+                System.out.println("Current activity: " + activity.getName());
+            });
+        }, error -> {
+            // Handle errors
+            System.err.println("Error retrieving presence: " + error.getMessage());
+        });
+        return event.reply().withContent("asd").withEphemeral(true);
     }
 }

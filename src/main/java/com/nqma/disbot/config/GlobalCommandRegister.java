@@ -1,9 +1,11 @@
-package com.nqma.disbot.initconfig;
+package com.nqma.disbot.config;
 
 
+import com.nqma.disbot.service.commands.Setup;
 import com.nqma.disbot.service.commands.listener.SlashCommandListener;
 import com.nqma.disbot.service.commands.music.*;
 import com.nqma.disbot.service.files.FileService;
+import com.nqma.disbot.service.guildsettings.GuildSettingService;
 import discord4j.common.JacksonResources;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.discordjson.json.ApplicationCommandRequest;
@@ -32,8 +34,12 @@ public class GlobalCommandRegister {
     private static final JacksonResources MAPPER = JacksonResources.create();
 
     @Autowired
-    public GlobalCommandRegister(GatewayDiscordClient client) {
+    private final GuildSettingService guildSettingService;
+
+    @Autowired
+    public GlobalCommandRegister(GatewayDiscordClient client, GuildSettingService guildSettingService) {
         this.client = client;
+        this.guildSettingService = guildSettingService;
     }
 
     @SneakyThrows
@@ -53,12 +59,13 @@ public class GlobalCommandRegister {
 
         //Register our slash command listener
         slashCommandListener = new SlashCommandListener(List.of(
-                new Play(),
+                new Play(guildSettingService),
                 new Next(),
                 new Plist(),
                 new Pause(),
                 new Stop(),
                 new Status(),
+                new Setup(guildSettingService),
                 new Skip()),
                 client);
 
