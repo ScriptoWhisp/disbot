@@ -1,11 +1,8 @@
 package com.nqma.disbot.service.guildsettings;
 
-import com.austinv11.servicer.Service;
 import com.nqma.disbot.repository.GuildSetting;
 import com.nqma.disbot.repository.GuildSettingRepository;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;

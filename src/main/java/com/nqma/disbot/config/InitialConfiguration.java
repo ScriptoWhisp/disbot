@@ -4,6 +4,8 @@ import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.presence.ClientActivity;
 import discord4j.core.object.presence.ClientPresence;
+import discord4j.gateway.intent.Intent;
+import discord4j.gateway.intent.IntentSet;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +32,12 @@ public class InitialConfiguration {
         client = DiscordClientBuilder.create(discordToken)
                 .build()
                 .gateway()
+                .setEnabledIntents(IntentSet.of(
+                        Intent.GUILDS,
+                        Intent.GUILD_MEMBERS,
+                        Intent.GUILD_PRESENCES,
+                        Intent.GUILD_VOICE_STATES
+                ))
                 .setInitialPresence(spec -> ClientPresence.online(ClientActivity.watching("you")))
                 .login()
                 .block();
