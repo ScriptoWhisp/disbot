@@ -37,6 +37,8 @@ public class GuildQueue {
     private final TrackScheduler scheduler;
     @Getter
     private final boolean inGameMode;
+    @Getter
+    private boolean inGame = false;
 
     @Getter
     private VoiceChannel channel = null;
@@ -51,8 +53,9 @@ public class GuildQueue {
 
         // Create an AudioPlayer so Discord4J can receive audio data
 
-        AudioProvider provider = new LavaPlayerAudioProvider(player);
+        player.setPaused(inGame);
 
+        AudioProvider provider = new LavaPlayerAudioProvider(player);
 
         scheduler = TrackScheduler.builder().player(player).guildQueue(this).build();
 
@@ -113,6 +116,7 @@ public class GuildQueue {
     }
 
     public boolean setPaused(boolean isPaused) {
+        inGame = isPaused;
         if (isPaused == player.isPaused()) return isPaused;
         player.setPaused(isPaused);
         return isPaused;

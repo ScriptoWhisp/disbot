@@ -14,27 +14,35 @@ import java.util.Optional;
 @EnableScheduling
 public class InGameMode {
 
-    @Scheduled(fixedDelay = 40000) // 60000 milliseconds = 1 minute
+    @Scheduled(fixedDelay = 10000) // 60000 milliseconds = 1 minute
     public void handle() {
         if (GuildQueue.getGuildQueues().isEmpty()) return;
 
         System.out.println("InGameMode.handle()");
         GuildQueue.getGuildsQueueWithGameMode().forEach(guildQueue -> {
 
-            if (guildQueue.getCurrentSong() == null) return;
+            boolean gameStrategy = isInGame(guildQueue);
+            System.out.println("is in game: " + gameStrategy + " for guild: " + guildQueue.isInGame());
 
-            Member member = guildQueue.getCurrentSong().getMember();
-            Optional<Activity> memberActivity = member.getPresence().block().getActivity();
-
-            if (memberActivity.isEmpty()) {
-                System.out.println("Member: " + member.getUsername() + " is not playing anything.");
-                return;
+            if (gameStrategy != guildQueue.isInGame()) {
+                boolean b = guildQueue.setPaused(gameStrategy);
+                System.out.println("is in game: " + b);
             }
-            System.out.println("Member: " + member.getUsername() + " is playing: " + memberActivity.get().getName());
-            GameStrategy gameStrategy = GameStrategy.getGameStrategy(memberActivity.get().getName());
-
-            boolean b = guildQueue.setPaused(gameStrategy.isInGame(memberActivity.get().getDetails()));
-            System.out.println("is in game: " + b);
         });
     }
+
+    public static boolean isInGame(GuildQueue guildQueue) {
+        if (guildQueue.getCurrentSong() == null) return false;
+
+        Member member = guildQueue.getCurrentSong().getMember();
+        Optional<Activity> memberActivity = member.getPresence().block().getActivity();
+
+        if (memberActivity.isEmpty()) {
+            System.out.println("Member: " + member.getUsername() + " is not playing anything.");
+            return false;
+        }
+        System.out.println("Member: " + member.getUsername() + " is playing: " + memberActivity.get().getName());
+        return GameStrategy.getGameStrategy(memberActivity.get().getName()).isInGame(memberActivity.get());
+    }
+
 }

@@ -1,18 +1,16 @@
 package com.nqma.disbot.service.ingamemode.game;
 
-import java.util.Optional;
+import discord4j.core.object.presence.Activity;
 
 public interface GameStrategy {
 
-    boolean isInGame(Optional<String> status);
+    boolean isInGame(Activity status);
 
     static GameStrategy getGameStrategy(String game) {
-        switch (game) {
-            case "PUBG: BATTLEGROUNDS":
-                return new PUBG();
-            default:
-                return new Default();
-        }
+        return switch (game) {
+            case "PUBG: BATTLEGROUNDS" -> new PUBG();
+            default -> new Default();
+        };
     }
 
 }

@@ -1,10 +1,10 @@
 package com.nqma.disbot.service.ingamemode.game;
 
-import java.util.Optional;
+import discord4j.core.object.presence.Activity;
 
 public class Default implements GameStrategy {
     @Override
-    public boolean isInGame(Optional<String> status) {
+    public boolean isInGame(Activity status) {
         return false;
     }
 }
