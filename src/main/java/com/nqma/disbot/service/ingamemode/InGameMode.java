@@ -14,7 +14,7 @@ import java.util.Optional;
 @EnableScheduling
 public class InGameMode {
 
-    @Scheduled(fixedDelay = 10000) // 60000 milliseconds = 1 minute
+    @Scheduled(fixedDelay = 30000) // 60000 milliseconds = 1 minute
     public void handle() {
         if (GuildQueue.getGuildQueues().isEmpty()) return;
 

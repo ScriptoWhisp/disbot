@@ -25,6 +25,4 @@ public class LimitedSizeList<E> extends ArrayList<E> {
         }
         super.add(index, element);
     }
-
-    // Additional methods if needed
 }

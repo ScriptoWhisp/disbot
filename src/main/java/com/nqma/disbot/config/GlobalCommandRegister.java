@@ -4,7 +4,7 @@ package com.nqma.disbot.config;
 import com.nqma.disbot.service.commands.Setup;
 import com.nqma.disbot.service.commands.listener.SlashCommandListener;
 import com.nqma.disbot.service.commands.music.*;
-import com.nqma.disbot.service.files.FileService;
+import com.nqma.disbot.utils.FileReader;
 import com.nqma.disbot.service.guildsettings.GuildSettingService;
 import discord4j.common.JacksonResources;
 import discord4j.core.GatewayDiscordClient;
@@ -16,8 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
@@ -37,6 +35,9 @@ public class GlobalCommandRegister {
     private final GuildSettingService guildSettingService;
 
     @Autowired
+    private FileReader fileReader;
+
+    @Autowired
     public GlobalCommandRegister(GatewayDiscordClient client, GuildSettingService guildSettingService) {
         this.client = client;
         this.guildSettingService = guildSettingService;
@@ -48,14 +49,7 @@ public class GlobalCommandRegister {
         // Get our application's ID
         long applicationId = client.getRestClient().getApplicationId().block();
 
-        List<ApplicationCommandRequest> commands = new ArrayList<>();
-        for (String command : FileService.listFiles(commandsDirectory)) {
-            System.out.println("Command: " + command);
-
-            ApplicationCommandRequest commandRequest = MAPPER.getObjectMapper().readValue(new File(command), ApplicationCommandRequest.class);
-
-            commands.add(commandRequest);
-        }
+        List<ApplicationCommandRequest> commands = fileReader.listFilesOfAppComReq(commandsDirectory);
 
         //Register our slash command listener
         slashCommandListener = new SlashCommandListener(List.of(
