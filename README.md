@@ -28,7 +28,7 @@ Bootie is an open-source Discord bot that can play music in a voice chat. It off
 #### Some advanced features include:
 
 Automatically stop music when a game (e.g., PUBG) starts
-Continue with similar songs when the queue ends
+Continue with similar songs when the queue ends (not implemented yet)
 
 ## Installation
 
@@ -55,10 +55,6 @@ Configuration details will be provided here. (Placeholders for now)
 ## Requirements
 
 Requirements and dependencies will be listed here. (Placeholders for now)
-
-## Contributing
-
-Contributions are welcome! Please submit a pull request or open an issue to discuss changes.
 
 ## License
 
